@@ -70,6 +70,7 @@ class Explainer(torch.nn.Module):
         model_name = "meta-llama/Llama-2-7b-chat-hf"
         self.model = LlamaForCausalLM.from_pretrained(model_name, load_in_8bit=True)
         self.tokenizer = LlamaTokenizer.from_pretrained(model_name)
+        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
         # add special tokens for user and item embeddings
         special_tokens_dict = {"additional_special_tokens": ["<USER_EMBED>", "<ITEM_EMBED>", "<EXPLAIN_POS>"]}
@@ -96,7 +97,7 @@ class Explainer(torch.nn.Module):
         )
 
         # Convert tokenized input IDs to model's embeddings
-        inputs_embeds = self.model.get_input_embeddings()(tokenized_inputs['input_ids'])
+        inputs_embeds = self.model.get_input_embeddings()(tokenized_inputs['input_ids'].to(self.device))
         
         # Get the token ID for the <USER_EMBED> <ITEM_EMBED> token
         user_embed_token_id = self.tokenizer.convert_tokens_to_ids("<USER_EMBED>")
