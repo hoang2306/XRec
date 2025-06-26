@@ -659,6 +659,9 @@ class LlamaSdpaAttention(LlamaAttention):
             # query_states.shape = [batch_size, seq_len, num_heads * head_dim]
             # user_embed_pos and item_embed_pos are the positions of the <USER_EMBED> and <ITEM_EMBED> tokens in the input, shape: [batch_size]
             # user_embed and item_embed are the embeddings of the user and item, shape: [batch_size, embed_dim]
+            query_states = query_states.clone()
+            key_states = key_states.clone()
+            value_states = value_states.clone()
             query_states[torch.arange(user_embed_pos.shape[0]), user_embed_pos[:,0], :] += user_embed
             query_states[torch.arange(item_embed_pos.shape[0]), item_embed_pos[:,0], :] += item_embed
             key_states[torch.arange(user_embed_pos.shape[0]), user_embed_pos[:,0], :] += user_embed
