@@ -102,25 +102,37 @@ class Explainer(torch.nn.Module):
 
         # Convert tokenized input IDs to model's embeddings
         inputs_embeds = self.model.get_input_embeddings()(tokenized_inputs['input_ids'].to(user_embedding.device))
-        print(f'inputs_embeds shape: {inputs_embeds.shape}')
+        # print(f'inputs_embeds shape: {inputs_embeds.shape}')
         
         # Get the token ID for the <USER_EMBED> <ITEM_EMBED> token
         user_embed_token_id = self.tokenizer.convert_tokens_to_ids("<USER_EMBED>")
         item_embed_token_id = self.tokenizer.convert_tokens_to_ids("<ITEM_EMBED>")
         explain_pos_token_id = self.tokenizer.convert_tokens_to_ids("<EXPLAIN_POS>")
-
+        print(f'user_embed_token_id: {user_embed_token_id}')
+        print(f'item_embed_token_id: {item_embed_token_id}')
+        print(f'explain_pos_token_id: {explain_pos_token_id}')
+    
         # Find the position of the <USER_EMBED> <ITEM_EMBED> <EXPLAIN_POS> token in the input embeddings
         # shape of explain_pos_position: [batch_size]
         user_embed_position = (tokenized_inputs['input_ids'] == user_embed_token_id).nonzero()[:,1:]
         item_embed_position = (tokenized_inputs['input_ids'] == item_embed_token_id).nonzero()[:,1:]
         explain_pos_position = (tokenized_inputs['input_ids'] == explain_pos_token_id).nonzero()[:,1:]
+        print(f'user_embed_position: {user_embed_position}')
+        print(f'item_embed_position: {item_embed_position}')
+        print(f'explain_pos_position: {explain_pos_position}')
 
         # replace by our converted embeddings
         inputs_embeds[torch.arange(user_embed_position.shape[0]), user_embed_position[:,0], :] = converted_user_embedding
         inputs_embeds[torch.arange(item_embed_position.shape[0]), item_embed_position[:,0], :] = converted_item_embedding
 
         # shape of outputs.logits: [batch_size, input_length, vocab_size]
-        outputs = self.model(inputs_embeds=inputs_embeds, user_embed = converted_user_embedding, item_embed = converted_item_embedding, user_embed_pos=user_embed_position, item_embed_pos=item_embed_position)
+        outputs = self.model(
+            inputs_embeds=inputs_embeds, 
+            user_embed=converted_user_embedding, 
+            item_embed=converted_item_embedding, 
+            user_embed_pos=user_embed_position, 
+            item_embed_pos=item_embed_position
+        )
         return tokenized_inputs['input_ids'], outputs, explain_pos_position.flatten()
 
     def loss(self, input_ids, outputs, explain_pos_position, device):
