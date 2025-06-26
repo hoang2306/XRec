@@ -97,7 +97,7 @@ class Explainer(torch.nn.Module):
         )
 
         # Convert tokenized input IDs to model's embeddings
-        inputs_embeds = self.model.get_input_embeddings()(tokenized_inputs['input_ids'].to(self.device))
+        inputs_embeds = self.model.get_input_embeddings()(tokenized_inputs['input_ids'].to(user_embedding.device))
         
         # Get the token ID for the <USER_EMBED> <ITEM_EMBED> token
         user_embed_token_id = self.tokenizer.convert_tokens_to_ids("<USER_EMBED>")
