@@ -88,16 +88,21 @@ class Explainer(torch.nn.Module):
 
     def forward(self, user_embedding, item_embedding, input_text):
         # Convert embeddings
-        converted_user_embedding = self.user_embedding_converter(user_embedding).half()
-        converted_item_embedding = self.item_embedding_converter(item_embedding).half()
+        # .half(): convert to half-precision float (float16) to save memory 
+        converted_user_embedding = self.user_embedding_converter(user_embedding).half() # [bs, token_size] = [bs, 4096]
+        converted_item_embedding = self.item_embedding_converter(item_embedding).half() # [bs, token_size] = [bs, 4096]
+        print(f'converted_user_embedding shape: {converted_user_embedding.shape}')
+        print(f'converted_item_embedding shape: {converted_item_embedding.shape}')
 
         # shape of tokenized_inputs['input_ids']: [batch_size, input_length]
         tokenized_inputs = self.tokenizer(
             input_text, padding=True, return_tensors="pt"
         )
+        print(f'tokenized_inputs shape: {tokenized_inputs.shape}')
 
         # Convert tokenized input IDs to model's embeddings
         inputs_embeds = self.model.get_input_embeddings()(tokenized_inputs['input_ids'].to(user_embedding.device))
+        print(f'inputs_embeds shape: {inputs_embeds.shape}')
         
         # Get the token ID for the <USER_EMBED> <ITEM_EMBED> token
         user_embed_token_id = self.tokenizer.convert_tokens_to_ids("<USER_EMBED>")
