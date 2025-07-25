@@ -69,7 +69,8 @@ class Explainer(torch.nn.Module):
         notebook_login()
 
         # Load the model and tokenizer
-        model_name = "meta-llama/Llama-2-7b-chat-hf"
+        # model_name = "meta-llama/Llama-2-7b-chat-hf"
+        model_name = 'meta-llama/Llama-3.2-3B-Instruct'
         self.model = LlamaForCausalLM.from_pretrained(model_name, load_in_8bit=True)
         self.tokenizer = LlamaTokenizer.from_pretrained(model_name)
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
