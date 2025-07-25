@@ -14,7 +14,7 @@ print(f"using device {device}")
 class XRec:
     def __init__(self):
         print(f"dataset: {args.dataset}")
-        self.model = Explainer().to(device)
+        self.model = Explainer(llm_model_int=args.llm_model).to(device)
         self.data_handler = DataHandler()
 
         self.trn_loader, self.val_loader, self.tst_loader = self.data_handler.load_data()
