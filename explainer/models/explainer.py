@@ -63,7 +63,7 @@ class Explainer(torch.nn.Module):
     def __init__(self, token_size=4096, user_embed_size=64, item_embed_size=64):
         super(Explainer, self).__init__()
         
-        from huggingface_hub import notebook_login, logi
+        from huggingface_hub import notebook_login, login
         # Login to Hugging Face Hub
         # login() 
         notebook_login()
