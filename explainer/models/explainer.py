@@ -62,10 +62,12 @@ class MoEAdaptorLayer(nn.Module):
 class Explainer(torch.nn.Module):
     def __init__(self, token_size=4096, user_embed_size=64, item_embed_size=64):
         super(Explainer, self).__init__()
-        from huggingface_hub import login
-        # Login to Hugging Face Hub
-        login() 
         
+        from huggingface_hub import notebook_login, logi
+        # Login to Hugging Face Hub
+        # login() 
+        notebook_login()
+
         # Load the model and tokenizer
         model_name = "meta-llama/Llama-2-7b-chat-hf"
         self.model = LlamaForCausalLM.from_pretrained(model_name, load_in_8bit=True)
