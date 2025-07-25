@@ -24,8 +24,14 @@ class XRec:
         self.tst_predictions_path = f"./data/{args.dataset}/tst_predictions.pkl"
         self.tst_references_path = f"./data/{args.dataset}/tst_references.pkl"
 
+    def print_trainable_parameters(self):
+        total_params = sum(p.numel() for p in self.model.parameters())
+        trainable_params = sum(p.numel() for p in self.model.parameters() if p.requires_grad)
+        print(f"Total parameters: {total_params}, Trainable parameters: {trainable_params}")
+
     def train(self):
         optimizer = torch.optim.Adam(self.model.parameters(), lr=args.lr)
+        self.print_trainable_parameters()
         pbar = tqdm(range(args.epochs), desc="Finetuning Progress", unit="epoch", total=args.epochs)
         for epoch in pbar:
             total_loss = 0
