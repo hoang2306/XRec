@@ -6,6 +6,7 @@ import torch.nn as nn
 from models.explainer import Explainer
 from utils.data_handler import DataHandler
 from utils.parse import args
+from tqdm import tqdm
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"using device {device}")
@@ -25,7 +26,8 @@ class XRec:
 
     def train(self):
         optimizer = torch.optim.Adam(self.model.parameters(), lr=args.lr)
-        for epoch in range(args.epochs):
+        pbar = tqdm(range(args.epochs), desc="Finetuning Progress", unit="epoch", total=args.epochs)
+        for epoch in pbar:
             total_loss = 0
             self.model.train()
             for i, batch in enumerate(self.trn_loader):
