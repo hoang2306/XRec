@@ -30,7 +30,10 @@ class XRec:
         for epoch in pbar:
             total_loss = 0
             self.model.train()
-            for i, batch in enumerate(self.trn_loader):
+            pbar_train = tqdm(
+                enumerate(self.trn_loader), desc="train loader", unit="batch", total=len(self.trn_loader)
+            )
+            for i, batch in pbar_train:
                 user_embed, item_embed, input_text = batch
                 user_embed = user_embed.to(device)
                 item_embed = item_embed.to(device)
