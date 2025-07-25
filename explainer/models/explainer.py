@@ -60,7 +60,7 @@ class MoEAdaptorLayer(nn.Module):
 
 
 class Explainer(torch.nn.Module):
-    def __init__(self, token_size=4096, user_embed_size=64, item_embed_size=64):
+    def __init__(self, token_size=4096, user_embed_size=64, item_embed_size=64, llm_model_int=0):
         super(Explainer, self).__init__()
         
         from huggingface_hub import notebook_login, login
@@ -69,8 +69,13 @@ class Explainer(torch.nn.Module):
         notebook_login()
 
         # Load the model and tokenizer
+        model_name_dict = {
+            0: "meta-llama/Llama-2-7b-chat-hf",
+            1: 'meta-llama/Llama-3.2-3B-Instruct'
+        }
         # model_name = "meta-llama/Llama-2-7b-chat-hf"
-        model_name = 'meta-llama/Llama-3.2-3B-Instruct'
+        model_name = model_name_dict[llm_model_int]
+        print(f'llm model using: {model_name}')
         self.model = LlamaForCausalLM.from_pretrained(model_name, load_in_8bit=True)
         self.tokenizer = LlamaTokenizer.from_pretrained(model_name)
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')

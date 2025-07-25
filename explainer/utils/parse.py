@@ -8,6 +8,7 @@ def parse_configure():
     parser.add_argument("--weight_decay", type=float, default=1e-6, help="Weight decay")
     parser.add_argument("--epochs", type=int, default=1, help="Number of epochs")
     parser.add_argument("--mode", type=str, default="finetune", help="finetune or generate")
+    parser.add_argument("--llm_model", type=int, default=0, help="Model name")
     return parser.parse_args()
 
 args = parse_configure()
