@@ -339,6 +339,8 @@ class LlamaAttention(nn.Module):
         
         if query_states.shape[1] != 1:
             # query_states.shape = [batch_size, seq_len, num_heads * head_dim]
+            # user_emb = [batch_size, hidden_dim]
+            # item_emb = [batch_size, hidden_dim]
             # user_embed_pos and item_embed_pos are the positions of the <USER_EMBED> and <ITEM_EMBED> tokens in the input, shape: [batch_size]
             # user_embed and item_embed are the embeddings of the user and item, shape: [batch_size, embed_dim]
             query_states = query_states.clone()

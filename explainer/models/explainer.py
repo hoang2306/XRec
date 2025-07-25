@@ -73,7 +73,9 @@ class Explainer(torch.nn.Module):
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
         # add special tokens for user and item embeddings
-        special_tokens_dict = {"additional_special_tokens": ["<USER_EMBED>", "<ITEM_EMBED>", "<EXPLAIN_POS>"]}
+        special_tokens_dict = {
+            "additional_special_tokens": ["<USER_EMBED>", "<ITEM_EMBED>", "<EXPLAIN_POS>"]
+        }
         self.tokenizer.add_special_tokens(special_tokens_dict)
         self.tokenizer.add_special_tokens({"pad_token":"<pad>"})
         self.tokenizer.pad_token = "<pad>"
@@ -83,15 +85,25 @@ class Explainer(torch.nn.Module):
         for param in self.model.parameters():
             param.requires_grad = False
 
-        self.user_embedding_converter = MoEAdaptorLayer(n_exps=8, layers=[user_embed_size, token_size], dropout=0.2, noise=True)
-        self.item_embedding_converter = MoEAdaptorLayer(n_exps=8, layers=[item_embed_size, token_size], dropout=0.2, noise=True)
+        self.user_embedding_converter = MoEAdaptorLayer(
+            n_exps=8, 
+            layers=[user_embed_size, token_size], 
+            dropout=0.2, 
+            noise=True
+        )
+        self.item_embedding_converter = MoEAdaptorLayer(
+            n_exps=8, 
+            layers=[item_embed_size, token_size], 
+            dropout=0.2, 
+            noise=True
+        )
 
     def forward(self, user_embedding, item_embedding, input_text):
         # Convert embeddings
         # .half(): convert to half-precision float (float16) to save memory 
         converted_user_embedding = self.user_embedding_converter(user_embedding).half() # [bs, token_size] = [bs, 4096]
         converted_item_embedding = self.item_embedding_converter(item_embedding).half() # [bs, token_size] = [bs, 4096]
-        print(f'converted_user_embedding shape: {converted_user_embedding.shape}')
+        print(f'converted_user_embedding shape: {converted_user_embedding.shape}') 
         print(f'converted_item_embedding shape: {converted_item_embedding.shape}')
 
         # shape of tokenized_inputs['input_ids']: [batch_size, input_length]
@@ -102,24 +114,24 @@ class Explainer(torch.nn.Module):
 
         # Convert tokenized input IDs to model's embeddings
         inputs_embeds = self.model.get_input_embeddings()(tokenized_inputs['input_ids'].to(user_embedding.device))
-        print(f'inputs_embeds shape: {inputs_embeds.shape}')
+        print(f'inputs_embeds shape: {inputs_embeds.shape}') # [1, 180, 4096]
         
         # Get the token ID for the <USER_EMBED> <ITEM_EMBED> token
         user_embed_token_id = self.tokenizer.convert_tokens_to_ids("<USER_EMBED>")
         item_embed_token_id = self.tokenizer.convert_tokens_to_ids("<ITEM_EMBED>")
         explain_pos_token_id = self.tokenizer.convert_tokens_to_ids("<EXPLAIN_POS>")
-        print(f'user_embed_token_id: {user_embed_token_id}')
-        print(f'item_embed_token_id: {item_embed_token_id}')
-        print(f'explain_pos_token_id: {explain_pos_token_id}')
+        print(f'user_embed_token_id: {user_embed_token_id}') # 32000
+        print(f'item_embed_token_id: {item_embed_token_id}') # 32001
+        print(f'explain_pos_token_id: {explain_pos_token_id}') # 32002
     
         # Find the position of the <USER_EMBED> <ITEM_EMBED> <EXPLAIN_POS> token in the input embeddings
         # shape of explain_pos_position: [batch_size]
         user_embed_position = (tokenized_inputs['input_ids'] == user_embed_token_id).nonzero()[:,1:]
         item_embed_position = (tokenized_inputs['input_ids'] == item_embed_token_id).nonzero()[:,1:]
         explain_pos_position = (tokenized_inputs['input_ids'] == explain_pos_token_id).nonzero()[:,1:]
-        print(f'user_embed_position: {user_embed_position}')
-        print(f'item_embed_position: {item_embed_position}')
-        print(f'explain_pos_position: {explain_pos_position}')
+        print(f'user_embed_position: {user_embed_position}') # tensor([[33]])
+        print(f'item_embed_position: {item_embed_position}') # tensor([[38]])
+        print(f'explain_pos_position: {explain_pos_position}') # tensor([[124]])
 
         # replace by our converted embeddings
         inputs_embeds[torch.arange(user_embed_position.shape[0]), user_embed_position[:,0], :] = converted_user_embedding
@@ -186,7 +198,14 @@ class Explainer(torch.nn.Module):
         inputs_embeds[torch.arange(item_embed_position.shape[0]), item_embed_position[:,0], :] = converted_item_embedding
 
         # shape of outputs.logits: [batch_size, input_length, vocab_size]
-        outputs = self.model.generate(inputs_embeds=inputs_embeds, max_new_tokens=128, user_embed = converted_user_embedding, item_embed = converted_item_embedding, user_embed_pos=user_embed_position, item_embed_pos=item_embed_position)
+        outputs = self.model.generate(
+            inputs_embeds=inputs_embeds, 
+            max_new_tokens=128, 
+            user_embed=converted_user_embedding, 
+            item_embed=converted_item_embedding, 
+            user_embed_pos=user_embed_position, 
+            item_embed_pos=item_embed_position
+        )
         output_text = self.tokenizer.batch_decode(outputs, skip_special_tokens=True)
         return output_text
         
