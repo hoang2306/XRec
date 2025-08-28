@@ -1380,6 +1380,7 @@ class LlamaForCausalLM(LlamaPreTrainedModel, GenerationMixin):
         # if `inputs_embeds` are passed, we only want to use them in the 1st generation step
         if inputs_embeds is not None and past_key_values is None:
             model_inputs = {"inputs_embeds": inputs_embeds}
+            print(f'OKKKKKKK')
         else:
             # The `contiguous()` here is necessary to have a static stride during decoding. torchdynamo otherwise
             # recompiles graphs as the stride of the inputs is a guard. Ref: https://github.com/huggingface/transformers/pull/29114
