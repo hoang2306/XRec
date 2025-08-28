@@ -178,6 +178,9 @@ class Explainer(torch.nn.Module):
     
     def generate(self, user_embedding, item_embedding, input_text):
         # Convert embeddings
+
+        print(f'user_embedding device: {user_embedding.device}')
+
         converted_user_embedding = self.user_embedding_converter(user_embedding).half()
         converted_item_embedding = self.item_embedding_converter(item_embedding).half()
         print(f'converted_user_embedding device: {converted_user_embedding.device}')
