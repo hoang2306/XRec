@@ -93,7 +93,7 @@ class XRec:
                 item_embed = item_embed.to(device)
                 print(f'user_embed shape: {user_embed.shape}')
                 print(f'item_embed shape: {item_embed.shape}')
-                print(f'input_text shape: {input_text.shape}')
+                print(f'input_text: {input_text}')
                 outputs = self.model.generate(user_embed, item_embed, input_text)
                 end_idx = outputs[0].find("[")
                 if end_idx != -1:
