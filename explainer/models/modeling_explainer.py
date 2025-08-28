@@ -2966,6 +2966,7 @@ class LlamaForCausalLM(LlamaPreTrainedModel, GenerationMixin):
                 # )
                 if isinstance(past_key_values, StaticCache) and past_key_values.get_max_length() is not None:
                     max_cache_length = torch.tensor(past_key_values.get_max_length(), device=input_ids.device)
+                    print(f'okk???')
                 else:
                     max_cache_length = None
                 cache_length = past_length if max_cache_length is None else torch.min(max_cache_length, past_length)
