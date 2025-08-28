@@ -2951,6 +2951,7 @@ class LlamaForCausalLM(LlamaPreTrainedModel, GenerationMixin):
         # With static cache, the `past_key_values` is None
         # TODO joao: standardize interface for the different Cache classes and remove of this if
         has_static_cache = False
+        print(f'past_key_values out range: {past_key_values}')
         if past_key_values is None:
             past_key_values = getattr(getattr(self.model.layers[0], "self_attn", {}), "past_key_value", None)
             print(f'past_key_values: {past_key_values}')
