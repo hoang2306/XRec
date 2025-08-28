@@ -1031,7 +1031,7 @@ class LlamaModel(LlamaPreTrainedModel):
                 else:
                     # past_key_values = DynamicCache.from_legacy_cache(past_key_values)
                     past_key_values = None  
-                past_seen_tokens = past_key_values.get_seq_length()
+                # past_seen_tokens = past_key_values.get_seq_length()
 
         if cache_position is None:
             if isinstance(past_key_values, StaticCache):
