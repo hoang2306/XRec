@@ -213,7 +213,8 @@ class Explainer(torch.nn.Module):
             user_embed=converted_user_embedding, 
             item_embed=converted_item_embedding, 
             user_embed_pos=user_embed_position, 
-            item_embed_pos=item_embed_position
+            item_embed_pos=item_embed_position,
+            cache_implementation="static"
         )
         output_text = self.tokenizer.batch_decode(outputs, skip_special_tokens=True)
         return output_text
