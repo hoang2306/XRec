@@ -180,6 +180,8 @@ class Explainer(torch.nn.Module):
         # Convert embeddings
         converted_user_embedding = self.user_embedding_converter(user_embedding).half()
         converted_item_embedding = self.item_embedding_converter(item_embedding).half()
+        print(f'converted_user_embedding device: {converted_user_embedding.device}')
+        print(f'converted_item_embedding device: {converted_item_embedding.device}')
 
         # shape of tokenized_inputs['input_ids']: [batch_size, input_length]
         tokenized_inputs = self.tokenizer(
