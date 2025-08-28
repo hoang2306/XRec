@@ -1019,6 +1019,8 @@ class LlamaModel(LlamaPreTrainedModel):
         if inputs_embeds is None:
             inputs_embeds = self.embed_tokens(input_ids)
 
+        print(f'inputs_embeds in forward shape: {inputs_embeds.shape}')
+
         past_seen_tokens = 0
         if use_cache:  # kept for BC (cache positions)
             if not isinstance(past_key_values, StaticCache):
