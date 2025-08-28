@@ -22,7 +22,7 @@ from transformers.modeling_outputs import (
 from transformers.modeling_utils import PreTrainedModel
 
 # adding GenerationMixin for generation
-from transformers.generation_utils import GenerationMixin
+from transformers.generation.utils import GenerationMixin
 
 from transformers.pytorch_utils import ALL_LAYERNORM_LAYERS
 from transformers.utils import (
