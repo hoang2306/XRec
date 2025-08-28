@@ -1126,8 +1126,8 @@ class LlamaModel(LlamaPreTrainedModel):
             target_length = (
                 attention_mask.shape[-1] if isinstance(attention_mask, torch.Tensor) else cache_position[-1] + 1
             )
-        print(f'seq shape: {sequence_length.shape}')
-        print(f'target shape: {target_length.shape}')
+        print(f'sequence_length: {sequence_length}')
+        print(f'target_length: {target_length}')
         causal_mask = torch.full((sequence_length, target_length), fill_value=min_dtype, dtype=dtype, device=device)
         if sequence_length != 1:
             causal_mask = torch.triu(causal_mask, diagonal=1)
