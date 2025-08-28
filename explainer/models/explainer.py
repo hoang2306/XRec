@@ -205,6 +205,7 @@ class Explainer(torch.nn.Module):
         inputs_embeds[torch.arange(user_embed_position.shape[0]), user_embed_position[:,0], :] = converted_user_embedding
         inputs_embeds[torch.arange(item_embed_position.shape[0]), item_embed_position[:,0], :] = converted_item_embedding
 
+        print(f'inputs_embeds shape in eval: {inputs_embeds.shape}')
         # shape of outputs.logits: [batch_size, input_length, vocab_size]
         outputs = self.model.generate(
             inputs_embeds=inputs_embeds, 
