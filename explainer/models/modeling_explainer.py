@@ -2953,6 +2953,7 @@ class LlamaForCausalLM(LlamaPreTrainedModel, GenerationMixin):
         has_static_cache = False
         if past_key_values is None:
             past_key_values = getattr(getattr(self.model.layers[0], "self_attn", {}), "past_key_value", None)
+            print(f'past_key_values: {past_key_values}')
             has_static_cache = past_key_values is not None
 
         past_length = 0
@@ -2968,6 +2969,7 @@ class LlamaForCausalLM(LlamaPreTrainedModel, GenerationMixin):
                     max_cache_length = torch.tensor(past_key_values.get_max_length(), device=input_ids.device)
                     print(f'okk???')
                 else:
+                    print(f'not ok???')
                     max_cache_length = None
                 cache_length = past_length if max_cache_length is None else torch.min(max_cache_length, past_length)
             # TODO joao: remove this `else` after `generate` prioritizes `Cache` objects
