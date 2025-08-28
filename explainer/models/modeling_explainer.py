@@ -1320,6 +1320,7 @@ class LlamaForCausalLM(LlamaPreTrainedModel, GenerationMixin):
     def prepare_inputs_for_generation(
         self, input_ids, past_key_values=None, attention_mask=None, inputs_embeds=None, cache_position=None, **kwargs
     ):
+        print(f'input_ids shape in prepare_inputs_for_generation: {input_ids.shape}')
         # With static cache, the `past_key_values` is None
         # TODO joao: standardize interface for the different Cache classes and remove of this if
         has_static_cache = False
