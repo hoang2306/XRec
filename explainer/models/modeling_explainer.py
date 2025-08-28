@@ -1019,6 +1019,7 @@ class LlamaModel(LlamaPreTrainedModel):
         if inputs_embeds is None:
             inputs_embeds = self.embed_tokens(input_ids)
 
+        print(f'input_ids: {input_ids}')
         print(f'inputs_embeds in forward shape: {inputs_embeds.shape}')
 
         past_seen_tokens = 0
